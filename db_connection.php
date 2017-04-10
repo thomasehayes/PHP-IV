@@ -11,9 +11,9 @@
 // 5. password: vagrant
 
 define('DB_HOST', 'localhost'); // A constant definition
-define('DB_NAME', 'employees'); // A constant definition
-define('DB_USER', 'vagrant'); // A constant definition
-define('DB_PASSWORD', 'vagrant'); // A constant definition
+define('DB_NAME', 'parks_db'); // A constant definition
+define('DB_USER', 'parks_user'); // A constant definition
+define('DB_PASSWORD', 'password'); // A constant definition
 								
 try {
 
@@ -25,16 +25,10 @@ try {
 
     $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-	// This is optional, we just want to show some output to confirm 
-	// that the connection was successful
-	// Will remove because it not neccessary
-	// echo $connection->getAttribute(PDO::ATTR_CONNECTION_STATUS), PHP_EOL;
-
+} catch (PDOException $e) {
 	// Exception
 	// comes from exceptional. - Something you cannot control
-
-} catch (PDOException $e) {
-    echo  $e->getMessage(), PHP_EOL;
+    echo  $e->getMessage() .  PHP_EOL;
 }
 
 ?>

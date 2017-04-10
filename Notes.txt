@@ -4,4 +4,17 @@
 
 * To connect to a MySQL database we'll use a PDO object
 * The PDO object will need a DSN
-	* Data Source Name -> driver
+	* Data Source Name -> driver, host, database name
+* I will also need the username and the password
+*
+* Database credentials should be ALWAYS excluded frmo git
+	* That's the reason why we have a constants.php file
+
+
+## Similarities
+
+Tables / Result Set -> Arrays -> bi-dimensional
+Columns				-> keys in an associative array
+Rows				-> item in an array
+
+
