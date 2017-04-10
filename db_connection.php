@@ -1,20 +1,6 @@
 <?php 
-
-// How we used to connect
-// mysql -u vagrant -p -- or -- localhost/ 127.0.0.1
-// This is how we connect it with PHP
-// DSN - Data Source Name
-// 1. Driver. mysql
-// 2. Host. 127.0.0.1 or localhost
-// 3. Database name. employees
-// 4. username: vagrant
-// 5. password: vagrant
-
-define('DB_HOST', 'localhost'); // A constant definition
-define('DB_NAME', 'parks_db'); // A constant definition
-define('DB_USER', 'parks_user'); // A constant definition
-define('DB_PASSWORD', 'password'); // A constant definition
-								
+require_once 'constants.php';
+			
 try {
 
 	$connection = new PDO(
