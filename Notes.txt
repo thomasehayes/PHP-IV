@@ -1,0 +1,7 @@
+# Notes
+
+# PHP and MySQL
+
+* To connect to a MySQL database we'll use a PDO object
+* The PDO object will need a DSN
+	* Data Source Name -> driver
