@@ -1,27 +1,62 @@
 <?php 
 
-	require_once 'db_connection.php';
+	require __DIR__ . '/db_connection.php';
+	require __DIR__ . '/../Input.php';
 
 	$title = "National Parks";
 
-	$offset = 4 * $_GET['page'] - 4;
-	
-	//select all from parks
-	$select = "SELECT * FROM national_parks LIMIT 4 OFFSET {$offset}";
+function getLastPage($connection, $limit) {
 
+	$statement = $connection->query("SELECT count(*) FROM national_parks");
+	$count = $statement->fetch()[0]; // to get the count
+	$lastPage = ceil($count / $limit);
+
+	return $lastPage;
+}
+
+function getPaginatedParks($connection, $page, $limit) {
+	// offset = (pageNumber - 1) * limit
+	$offset = ($page - 1) * $limit;
+
+	$select = "SELECT * FROM national_parks LIMIT $limit OFFSET $offset";
 	$statement = $connection->query($select);
 
-	$parks = $statement->fetchAll(PDO::FETCH_ASSOC);
+	return $statement->fetchAll(PDO::FETCH_ASSOC);
+}
 
-	$sqlTotalParks = "SELECT count(*) FROM national_parks";
+function handleOutOfRangeRequest($page, $lastPage) {
+	// protect from looking at negative pages, too high pages, and non-numeric pages
 
-	$countStatement = $connection->query($sqlTotalParks);
+	if($page < 1 || !is_numeric($page)) {
+		header("location: national_parks.php?page=1");
+		die;
+	} else if($page > $lastPage) {
+		header("location: national_parks.php?page=$lastPage");
+		die;
+	}
 
-	$totalParks = $countStatement->fetchColumn();
+}
 
-	$numberOfPages = ceil($totalParks/4);
+function pageController($connection) {
+
+	$data = [];
+	$limit = 4;
+	$page = Input::get('page', 1);
+
+	$lastPage = getLastPage($connection, $limit);
+	handleOutOfRangeRequest($page, $lastPage);
+
+	$data['parks'] = getPaginatedParks($connection, $page, $limit);
+	$data['page'] = $page;
+	$data['lastPage'] = $lastPage;
+
+	return $data;
+}
+
+extract(pageController($connection));
 
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -44,33 +79,41 @@
     <![endif]-->
 </head>
 <body>
+	<main class="container">
 	<h1 class="col-xs-12">National Parks</h1>
 	
-	<table class="col-xs-10 col-xs-offset-2">
-		<tr>
-			<th class="col-xs-3">Name</th>
-			<th class="col-xs-3">Location</th>
-			<th class="col-xs-3">Date Established</th>
-			<th class="col-xs-3">Area in Acres</th>
-		</tr>
-		<?php foreach($parks as $park): ?>
+	<table class="table table-bordered table-striped">
+
+		<thead>
 			<tr>
-				<td class="col-xs-3"><?= $park['name'] ?></td>
-				<td class="col-xs-3"><?= $park['location'] ?></td>
-				<td class="col-xs-3"><?= $park['date_established'] ?></td>
-				<td class="col-xs-3"><?= $park['area_in_acres'] ?></td>
+				<th class="col-xs-3">Name</th>
+				<th class="col-xs-3">Location</th>
+				<th class="col-xs-3">Date Established</th>
+				<th class="col-xs-3">Area in Acres</th>
 			</tr>
+		</thead>
+
+		<?php foreach($parks as $park): ?>
+			<tbody>
+				<tr>
+					<td class="col-xs-3"><?= $park['name'] ?></td>
+					<td class="col-xs-3"><?= $park['location'] ?></td>
+					<td class="col-xs-3"><?= $park['date_established'] ?></td>
+					<td class="col-xs-3"><?= $park['area_in_acres'] ?></td>
+				</tr>
+			</tbody>
 		<?php endforeach; ?>
+
 	</table>
-	<div class="col-xs-12 pagination-bar">
-		<ul class="pagination">
-			<?php foreach(range(1, $numberOfPages) as $pageNumber):?>
-				<li> 
-					<a href="national_parks.php?page=<?=$pageNumber?>">
-					<?=$pageNumber?></a>
-				</li>
-			<?php endforeach;?>
-		</ul>
-	</div>
+
+		<?php if($page > 1): ?>
+			<a href="?page=<?= $page - 1 ?>"><span class="glyphicon glyphicon-chevron-left">Previous</span></a>
+		<?php endif; ?>
+
+		<?php if($page < $lastPage): ?>	
+			<a class="pull-right" href="?page=<?= $page + 1 ?>"><span class="glyphicon glyphicon-chevron-right">Next</span></a>
+		<?php endif; ?>
+
+	</main>
 </body>
 </html>

@@ -1,19 +1,8 @@
 h1 {
-	font-size: 50px;
 	text-align: center;
-	color: white;
-}
-
-table {
-	color: white;
 }
 
 .pagination-bar {
 	text-align: center;
 }
 
-body {
-	background-image:url("img/background.jpg");
-	overflow-y:hidden;
-	overflow-x:hidden;
-}
