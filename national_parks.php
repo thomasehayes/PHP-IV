@@ -1,23 +1,25 @@
 <?php 
 
-require_once 'db_connection.php';
-$title = "National Parks";
+	require_once 'db_connection.php';
 
-$offset = 4 * $_GET['page'] - 4;
-//select all from parks
-$select = "SELECT * FROM national_parks LIMIT 4 OFFSET {$offset}";
+	$title = "National Parks";
 
-$statement = $connection->query($select);
+	$offset = 4 * $_GET['page'] - 4;
+	
+	//select all from parks
+	$select = "SELECT * FROM national_parks LIMIT 4 OFFSET {$offset}";
 
-$parks = $statement->fetchAll(PDO::FETCH_ASSOC);
+	$statement = $connection->query($select);
 
-$sqlTotalParks = "SELECT count(*) FROM national_parks";
+	$parks = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-$statement = $connection->query($sqlTotalParks);
+	$sqlTotalParks = "SELECT count(*) FROM national_parks";
 
-$totalParks = $statement->fetchColumn();
+	$countStatement = $connection->query($sqlTotalParks);
 
-$numberOfPages = ceil($totalParks/4);
+	$totalParks = $countStatement->fetchColumn();
+
+	$numberOfPages = ceil($totalParks/4);
 
 ?>
 <!DOCTYPE html>
@@ -32,6 +34,7 @@ $numberOfPages = ceil($totalParks/4);
         integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
         crossorigin="anonymous"
     >
+    <link rel="stylesheet" href="national_parks.css">
     <title><?= $title ?></title>
     <!--[if lt IE 9]>
     <script src="http://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js">
@@ -41,9 +44,9 @@ $numberOfPages = ceil($totalParks/4);
     <![endif]-->
 </head>
 <body>
-	<h1 class="col-xs-12 center-aligned" style="text-align: center;">National Parks</h1>
+	<h1 class="col-xs-12">National Parks</h1>
 	
-	<table class="col-xs-8 col-xs-offset-2">
+	<table class="col-xs-10 col-xs-offset-2">
 		<tr>
 			<th class="col-xs-3">Name</th>
 			<th class="col-xs-3">Location</th>
@@ -52,14 +55,14 @@ $numberOfPages = ceil($totalParks/4);
 		</tr>
 		<?php foreach($parks as $park): ?>
 			<tr>
-				<td><?= $park['name'] ?></td>
-				<td><?= $park['location'] ?></td>
-				<td><?= $park['date_established'] ?></td>
-				<td><?= $park['area_in_acres'] ?></td>
+				<td class="col-xs-3"><?= $park['name'] ?></td>
+				<td class="col-xs-3"><?= $park['location'] ?></td>
+				<td class="col-xs-3"><?= $park['date_established'] ?></td>
+				<td class="col-xs-3"><?= $park['area_in_acres'] ?></td>
 			</tr>
 		<?php endforeach; ?>
 	</table>
-	<div class="col-xs-12 center-aligned" style="text-align: center">
+	<div class="col-xs-12 pagination-bar">
 		<ul class="pagination">
 			<?php foreach(range(1, $numberOfPages) as $pageNumber):?>
 				<li> 
