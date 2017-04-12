@@ -23,7 +23,7 @@ function getPaginatedParks($connection, $page, $limit) {
 	$statement->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
 	$statement->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
 	$statement->execute();
-	
+
 	return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -45,6 +45,18 @@ function pageController($connection) {
 	$data = [];
 	$limit = 4;
 	$page = Input::get('page', 1);
+	if($_POST) {
+		$insert = "INSERT INTO national_parks (name, location, date_established, area_in_acres, description) VALUES(:name, :location, :date_established, :area_in_acres, :description)"; 
+		$statement = $connection->prepare($insert);
+		$statement->bindValue(':name', Input::get('name'), PDO::PARAM_STR);
+		$statement->bindValue(':location', Input::get('location'), PDO::PARAM_STR);
+		$statement->bindValue(':date_established', Input::get('date_established'), PDO::PARAM_STR);
+		$statement->bindValue(':area_in_acres', Input::get('area_in_acres'), PDO::PARAM_STR);
+		$statement->bindValue(':description', Input::get('description'), PDO::PARAM_STR);
+
+		$statement->execute();
+		header('location: national_parks.php');
+	} 
 
 	$lastPage = getLastPage($connection, $limit);
 	handleOutOfRangeRequest($page, $lastPage);
@@ -52,6 +64,7 @@ function pageController($connection) {
 	$data['parks'] = getPaginatedParks($connection, $page, $limit);
 	$data['page'] = $page;
 	$data['lastPage'] = $lastPage;
+
 
 	return $data;
 }
@@ -111,13 +124,57 @@ extract(pageController($connection));
 
 	</table>
 
-		<?php if($page > 1): ?>
-			<a href="?page=<?= $page - 1 ?>"><span class="glyphicon glyphicon-chevron-left">Previous</span></a>
-		<?php endif; ?>
+	<?php if($page > 1): ?>
+		<a href="?page=<?= $page - 1 ?>"><span class="glyphicon glyphicon-chevron-left">Previous</span></a>
+	<?php endif; ?>
 
-		<?php if($page < $lastPage): ?>	
-			<a class="pull-right" href="?page=<?= $page + 1 ?>"><span class="glyphicon glyphicon-chevron-right">Next</span></a>
-		<?php endif; ?>
+	<?php if($page < $lastPage): ?>	
+		<a class="pull-right" href="?page=<?= $page + 1 ?>"><span class="glyphicon glyphicon-chevron-right">Next</span></a>
+	<?php endif; ?>
+
+	<br>
+
+	<form class="form-horizontal" method="POST">
+	  <fieldset>
+	    <legend class="text-center">Add New National Park</legend>
+	    <div class="form-group">
+	      <label for="name" class="col-lg-2 control-label">Name</label>
+	      <div class="col-lg-10">
+	        <input name='name' type="text" class="form-control" id="name" placeholder="Name">
+	      </div>
+	    </div>
+	    <div class="form-group">
+	      <label for="location" class="col-lg-2 control-label">Location</label>
+	      <div class="col-lg-10">
+	        <input name='location' type="text" class="form-control" id="location" placeholder="Location">
+	      </div>
+	    </div>
+	    <div class="form-group">
+	      <label for="date_established" class="col-lg-2 control-label">Date Established</label>
+	      <div class="col-lg-10">
+	        <input name='date_established' type="text" class="form-control" id="date_established" placeholder="Date Established">
+	      </div>
+	    </div>
+	    <div class="form-group">
+	      <label for="area_in_acres" class="col-lg-2 control-label">Area in Acres</label>
+	      <div class="col-lg-10">
+	        <input name='area_in_acres' type="text" class="form-control" id="area_in_acres" placeholder="Area in Acres">
+	      </div>
+	    </div>
+	    <div class="form-group">
+	      <label for="description" class="col-lg-2 control-label">Description</label>
+	      <div class="col-lg-10">
+	        <textarea name='description' class="form-control" rows="3" id="description"></textarea>
+	      </div>
+	    </div>
+	    <div class="form-group">
+	      <div class="col-lg-10 col-lg-offset-2">
+	        <button type="reset" class="btn btn-default">Cancel</button>
+	        <button type="submit" class="btn btn-primary">Submit</button>
+	      </div>
+	    </div>
+	  </fieldset>
+	</form>		
 
 	</main>
 </body>
