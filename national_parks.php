@@ -86,20 +86,22 @@ extract(pageController($connection));
 
 		<thead>
 			<tr>
-				<th class="col-xs-3">Name</th>
-				<th class="col-xs-3">Location</th>
-				<th class="col-xs-3">Date Established</th>
-				<th class="col-xs-3">Area in Acres</th>
+				<th>Name</th>
+				<th>Location</th>
+				<th>Date Established</th>
+				<th>Area in Acres</th>
+				<th>Description</th>
 			</tr>
 		</thead>
 
 		<?php foreach($parks as $park): ?>
 			<tbody>
 				<tr>
-					<td class="col-xs-3"><?= $park['name'] ?></td>
-					<td class="col-xs-3"><?= $park['location'] ?></td>
-					<td class="col-xs-3"><?= $park['date_established'] ?></td>
-					<td class="col-xs-3"><?= $park['area_in_acres'] ?></td>
+					<td><?= $park['name'] ?></td>
+					<td><?= $park['location'] ?></td>
+					<td><?= $park['date_established'] ?></td>
+					<td><?= $park['area_in_acres'] ?></td>
+					<td><?= $park['description'] ?></td>
 				</tr>
 			</tbody>
 		<?php endforeach; ?>

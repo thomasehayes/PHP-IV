@@ -9,7 +9,8 @@ $createNationalParksTable = 'CREATE TABLE IF NOT EXISTS national_parks (
 	name varchar(150) NOT NULL,
 	location varchar(150) NOT NULL,
 	date_established date NOT NULL,
-	area_in_acres double,
+	area_in_acres double NOT NULL,
+	description varchar(1000) NOT NULL, 
 	PRIMARY KEY (id)
 )';
 
