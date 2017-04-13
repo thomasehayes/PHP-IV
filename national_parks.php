@@ -22,9 +22,13 @@ function getPaginatedParks($connection, $page, $limit) {
 	$statement = $connection->prepare($select);
 	$statement->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
 	$statement->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
-	$statement->execute();
-
-	return $statement->fetchAll(PDO::FETCH_ASSOC);
+	
+	$result = $statement->execute();
+	if($result){
+		return $statement->fetchAll(PDO::FETCH_ASSOC);
+	} else {
+		return [];
+	}
 }
 
 function handleOutOfRangeRequest($page, $lastPage) {
@@ -40,12 +44,13 @@ function handleOutOfRangeRequest($page, $lastPage) {
 
 }
 
-function pageController($connection) {
+function dateFormat() {
+	$date = new DateTime('2000-01-01');
+	$date->format('');
+}
 
-	$data = [];
-	$limit = 4;
-	$page = Input::get('page', 1);
-	if($_POST) {
+function insertParks($connection) {
+	if(!empty($_POST) && validateInput()) {
 		$insert = "INSERT INTO national_parks (name, location, date_established, area_in_acres, description) VALUES(:name, :location, :date_established, :area_in_acres, :description)"; 
 		$statement = $connection->prepare($insert);
 		$statement->bindValue(':name', Input::get('name'), PDO::PARAM_STR);
@@ -56,7 +61,24 @@ function pageController($connection) {
 
 		$statement->execute();
 		header('location: national_parks.php');
-	} 
+
+	}
+}
+
+function validateInput() {
+	if(empty($_POST['name']) || empty($_POST['location']) || empty($_POST['date_established']) || empty($_POST['area_in_acres']) || empty($_POST['description'])) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function pageController($connection) {
+
+	$data = [];
+	$limit = 4;
+	$page = Input::get('page', 1);
+	insertParks($connection);
 
 	$lastPage = getLastPage($connection, $limit);
 	handleOutOfRangeRequest($page, $lastPage);
@@ -152,7 +174,7 @@ extract(pageController($connection));
 	    <div class="form-group">
 	      <label for="date_established" class="col-lg-2 control-label">Date Established</label>
 	      <div class="col-lg-10">
-	        <input name='date_established' type="text" class="form-control" id="date_established" placeholder="Date Established">
+	        <input name='date_established' type="text" class="form-control" id="date_established" placeholder="mm/dd/yyyy">
 	      </div>
 	    </div>
 	    <div class="form-group">
